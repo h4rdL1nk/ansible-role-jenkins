@@ -27,7 +27,7 @@
   
 - name: Mount file-system
   mount:
-    state: present
+    state: mounted
     path: "{{ jenkins.storage.path }}"
     src: "/dev/{{ jenkins.storage.lvm.vg }}/{{ jenkins.storage.lvm.lv }}"
     fstype: "{{ jenkins.storage.filesystem.type }}"
