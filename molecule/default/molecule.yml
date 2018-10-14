@@ -21,8 +21,8 @@ platforms:
     memory: 1024
     cpus: 1
     provider_raw_config_args:
-      - "customize ['createhd', '--filename', '${MOLECULE_EPHEMERAL_DIRECTORY:-/tmp}/extra.vdi', '--size', 5 * 1024]"
-      - "customize ['createhd', '--filename', '${MOLECULE_EPHEMERAL_DIRECTORY:-/tmp}/jenkins-lib.vdi', '--size', 2 * 1024]"
+      - "customize ['createhd', '--filename', '${MOLECULE_EPHEMERAL_DIRECTORY:-/tmp}/extra.vdi', '--size', 3 * 1024]"
+      - "customize ['createhd', '--filename', '${MOLECULE_EPHEMERAL_DIRECTORY:-/tmp}/jenkins-lib.vdi', '--size', 1 * 1024]"
       - "customize ['storagectl', :id, '--name', 'SATA', '--add', 'sata', '--portcount', 2 ]"
       - "customize ['storageattach', :id, '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', '${MOLECULE_EPHEMERAL_DIRECTORY:-/tmp}/extra.vdi']"
       - "customize ['storageattach', :id, '--storagectl', 'SATA', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', '${MOLECULE_EPHEMERAL_DIRECTORY:-/tmp}/jenkins-lib.vdi']"
