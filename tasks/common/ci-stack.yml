@@ -1,0 +1,108 @@
+---
+
+- name: Copy SSL configuration files
+  copy:
+    src: "{{ jenkins.ssl.config.jks.file }}"
+    dest: "{{ jenkins.storage.path }}"/ssl/"
+  when: jenkins.ssl.enable | bool
+
+- name: Add cleanup cron jobs
+  cron:
+    name: "{{ item.name }}"
+    hour: "{{ item.hour }}"
+    minute: "{{ item.minute }}"
+    weekday: "{{ item.weekday }}"
+    job: "{{ item.job }}"
+  with_items:
+    - name: "Docker cleanup"
+      hour: 0
+      minute: 0 
+      weekday: '*'
+      job: "docker system prune -af"
+
+- name: Create anchore config directory
+  file:
+    path: "{{ jenkins.anchore.root }}{{ jenkins.anchore.config.engine.dir }}"
+    state: directory
+    mode: 0755
+
+- name: Create anchore engine config file
+  template:
+    src: anchore.j2
+    dest: "{{ jenkins.anchore.root }}{{ jenkins.anchore.config.engine.dir }}/config.yaml"
+
+- name: Create CI network
+  docker_network:
+    name: "{{ jenkins.docker.network.name }}"
+    driver: bridge
+    driver_options:
+      com.docker.network.driver.mtu: "1400"
+
+- name: Start anchore db container
+  docker_container: 
+    name: jenkins_ci_anchore_db
+    image: "{{ jenkins.anchore.config.db.image }}"
+    network_mode: bridge
+    networks:
+      - name: "{{ jenkins.docker.network.name }}"
+    volumes:
+      - "{{ jenkins.anchore.root }}{{ jenkins.anchore.config.db.dir }}:/var/lib/postgresql/data/pgdata/:Z"
+    env:
+      POSTGRES_PASSWORD: 4nchoreDbP4ss
+      PGDATA: "/var/lib/postgresql/data/pgdata/"
+    log_driver: json-file
+    log_options:
+      max-size: "50m"
+      max-file: "1"
+    state: started
+    restart_policy: unless-stopped
+
+- name: Start anchore engine container
+  docker_container: 
+    name: jenkins_ci_anchore_engine
+    image: "{{ jenkins.anchore.config.engine.image }}"
+    volumes:
+      - "{{ jenkins.anchore.root }}{{ jenkins.anchore.config.engine.dir }}:/config/:Z"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    env:
+      ANCHORE_ADMIN_PASS: sm4rtd1g1ts
+      ANCHORE_HOST_ID: jenkins_ci_anchore_engine
+      ANCHORE_DB_HOST_ID: jenkins_ci_anchore_db
+      ANCHORE_DB_USER: postgres
+      ANCHORE_DB_PASS: 4nchoreDbP4ss
+    network_mode: bridge
+    networks:
+      - name: "{{ jenkins.docker.network.name }}"
+    log_driver: json-file
+    log_options:
+      max-size: "50m"
+      max-file: "1"
+    state: started
+    restart_policy: unless-stopped
+
+- name: Start jenkins container
+  docker_container:
+    name: jenkins_ci_server
+    image: "{{ jenkins.docker.image }}"
+    memory: "{{ jenkins.config.memory | int }}m"
+    oom_killer: no
+    env:
+      JENKINS_OPTS: "{%if jenkins.ssl.enable %}--httpPort=-1 --httpsPort={{ jenkins.config.network.port }} --httpsKeyStore=/var/jenkins_home/ssl/{{ jenkins.ssl.config.jks.file }} --httpsKeyStorePassword={{ jenkins.ssl.config.jks.password }}{%else%}--httpPort={{ jenkins.config.network.port }}{%endif%}"
+      JAVA_OPTS: "-Djava.awt.headless=true -Xms{{ ( jenkins.config.memory / 4 )|int }}m -Xmx{{ ( jenkins.config.memory / 4 )|int }}m -Dcom.sun.jndi.ldap.connect.pool.protocol=DIGEST-MD5 -Dorg.apache.commons.jelly.tags.fmt.timeZone=Europe/Madrid"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/{{ jenkins.storage.path }}/:/var/jenkins_home/:rw,Z"
+    network_mode: bridge
+    networks:
+      - name: "{{ jenkins.docker.network.name }}"
+    exposed_ports:
+      - "{{ jenkins.config.network.port }}"
+    ports:
+      - "{{ jenkins.config.network.port }}:{{ jenkins.config.network.port }}"
+    log_driver: json-file
+    log_options:
+      max-size: "50m"
+      max-file: "1"
+    state: started
+    restart_policy: unless-stopped
+  tags: jenkins_deploy

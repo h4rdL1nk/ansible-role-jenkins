@@ -1,0 +1,35 @@
+---
+
+jenkins:
+  config:
+    memory: 512
+    network:
+      port: 8080
+  ssl:
+    enable: false
+    config:
+      jks:
+        file:
+        password:
+  storage:
+    device: /dev/sdc
+    path: /var/lib/jenkins
+    filesystem:
+      type: xfs
+    lvm:
+      vg: vg-jenkins
+      lv: lib
+      size: 100%FREE
+  docker:
+    image: jenkinsci/jenkins:alpine
+    network:
+      name: jenkins_ci
+  anchore:
+    root: /data/dockershared/anchore
+    config:
+      engine:
+        image: "anchore/anchore-engine:v0.2.4"
+        dir: config
+      db:
+        image: "postgres:9"
+        dir: db

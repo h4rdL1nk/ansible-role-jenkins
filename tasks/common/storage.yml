@@ -1,0 +1,34 @@
+---
+
+- name: Create volume group
+  lvg:
+    state: present
+    vg: "{{ jenkins.storage.lvm.vg }}"
+    pvs: "{{ jenkins.storage.device }}"
+    pesize: 32
+
+- name: Create logical volume
+  lvol:
+    state: present
+    vg: "{{ jenkins.storage.lvm.vg }}"
+    lv: "{{ jenkins.storage.lvm.lv }}"
+    size: "{{ jenkins.storage.lvm.size }}"
+    shrink: false
+
+- name: Create file-system
+  filesystem:
+    dev: "/dev/{{ jenkins.storage.lvm.vg }}/{{ jenkins.storage.lvm.lv }}"
+    fstype: "{{ jenkins.storage.filesystem.type }}"
+
+- name: Create storage directory
+  file:
+    path: "{{ jenkins.storage.path }}"
+    state: directory
+  
+- name: Mount file-system
+  mount:
+    state: present
+    path: "{{ jenkins.storage.path }}"
+    src: "/dev/{{ jenkins.storage.lvm.vg }}/{{ jenkins.storage.lvm.lv }}"
+    fstype: "{{ jenkins.storage.filesystem.type }}"
+    boot: true

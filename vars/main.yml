@@ -1,0 +1,19 @@
+---
+
+docker:
+  config:
+    daemon:
+      hosts:
+        - "unix:///var/run/docker.sock"
+        - "tcp://0.0.0.0:2375"
+      bip: "172.17.0.1/16"
+      storage-driver: "devicemapper"
+      storage-opts:
+        - "dm.directlvm_device=/dev/sdb"
+        - "dm.thinp_percent=95"
+        - "dm.thinp_metapercent=1"
+        - "dm.thinp_autoextend_threshold=80"
+        - "dm.thinp_autoextend_percent=20"
+        - "dm.directlvm_device_force=true"
+    systemd:
+      unit: /lib/systemd/system/docker.service

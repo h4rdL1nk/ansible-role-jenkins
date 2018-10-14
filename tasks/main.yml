@@ -1,0 +1,4 @@
+---
+
+- include_tasks: "common/storage.yml"
+- include_tasks: "common/ci-stack.yml"
