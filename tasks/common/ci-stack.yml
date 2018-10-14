@@ -1,10 +1,10 @@
 ---
 
-#- name: Copy SSL configuration files
-#  copy:
-#    src: "{{ jenkins.ssl.config.jks.file }}"
-#    dest: "{{ jenkins.storage.path }}"/ssl/"
-#  when: jenkins.ssl.enable | bool
+- name: Copy SSL configuration files
+  copy:
+    src: "{{ jenkins.ssl.config.jks.file }}"
+    dest: "{{ jenkins.storage.path }}/ssl/"
+  when: jenkins.ssl.enable | bool
 
 - name: Add cleanup cron jobs
   cron:
@@ -99,7 +99,7 @@
     exposed_ports:
       - "{{ jenkins.config.network.port }}"
     ports:
-      - "{{ jenkins.config.network.port }}:{{ jenkins.config.network.port }}"
+      - "{{ jenkins.config.network.ip }}:{{ jenkins.config.network.port }}:{{ jenkins.config.network.port }}"
     log_driver: json-file
     log_options:
       max-size: "50m"
