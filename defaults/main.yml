@@ -9,8 +9,8 @@ jenkins:
     enable: false
     config:
       jks:
-        file:
-        password:
+        file: test.jks
+        password: t3sTp4sSw0rD
   storage:
     device: /dev/sdc
     path: /var/lib/jenkins

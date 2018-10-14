@@ -1,10 +1,10 @@
 ---
 
-- name: Copy SSL configuration files
-  copy:
-    src: "{{ jenkins.ssl.config.jks.file }}"
-    dest: "{{ jenkins.storage.path }}"/ssl/"
-  when: jenkins.ssl.enable | bool
+#- name: Copy SSL configuration files
+#  copy:
+#    src: "{{ jenkins.ssl.config.jks.file }}"
+#    dest: "{{ jenkins.storage.path }}"/ssl/"
+#  when: jenkins.ssl.enable | bool
 
 - name: Add cleanup cron jobs
   cron:
