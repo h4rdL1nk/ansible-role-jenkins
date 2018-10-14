@@ -85,6 +85,7 @@
     name: jenkins_ci_server
     image: "{{ jenkins.docker.image }}"
     memory: "{{ jenkins.config.memory | int }}m"
+    user: root
     oom_killer: no
     env:
       JENKINS_OPTS: "{%if jenkins.ssl.enable %}--httpPort=-1 --httpsPort={{ jenkins.config.network.port }} --httpsKeyStore=/var/jenkins_home/ssl/{{ jenkins.ssl.config.jks.file }} --httpsKeyStorePassword={{ jenkins.ssl.config.jks.password }}{%else%}--httpPort={{ jenkins.config.network.port }}{%endif%}"

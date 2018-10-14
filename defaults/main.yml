@@ -5,6 +5,9 @@ jenkins:
     memory: 512
     network:
       port: 8080
+    user:
+      name: jenkins
+      uid: 1000
   ssl:
     enable: false
     config:
@@ -13,7 +16,7 @@ jenkins:
         password: t3sTp4sSw0rD
   storage:
     device: /dev/sdc
-    path: /var/lib/jenkins
+    path: /data/dockershared/jenkins
     filesystem:
       type: xfs
     lvm:
