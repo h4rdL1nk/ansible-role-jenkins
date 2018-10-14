@@ -2,9 +2,9 @@
 
 This role installs the following components:
 
-    - jenkins server
-    - anchore engine
-    - anchore postgres database
+- jenkins server
+- anchore engine
+- anchore postgres database
 
 The ```molecule.yml``` file has been modified to add an additional disk for docker storage only.
 

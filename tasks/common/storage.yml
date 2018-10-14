@@ -24,7 +24,7 @@
   file:
     path: "{{ jenkins.storage.path }}"
     state: directory
-  
+
 - name: Mount file-system
   mount:
     state: mounted
