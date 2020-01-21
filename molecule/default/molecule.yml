@@ -31,9 +31,36 @@ provisioner:
   name: ansible
   options:
     become: true
-  log: true
   lint:
     name: ansible-lint
+  inventory:
+    group_vars: 
+      all:
+        docker_ce_enable: True
+
+        docker_lvm_storage_enable: True 
+        docker_lvm_storage_pv_devices:
+          - /dev/sdb
+        docker_lvm_storage_lv_size: '2.5G'
+
+        docker_pip_enable: True
+        docker_pip_enable_install_script: True
+        docker_pip_so_packages:
+          - python-devel
+          - "@Development tools"
+        docker_pip_python_packages:
+          - docker-compose
+
+        docker_daemon_config:
+          storage-driver: overlay2
+          debug: true
+          exec-opts:
+            - native.cgroupdriver=systemd
+          bip: "192.168.200.1/24"
+          userland-proxy: true
+          live-restore: true
+          icc: true
+          selinux-enabled: true
 
 scenario:
   name: default

@@ -5,7 +5,7 @@
   src: https://github.com/h4rdL1nk/ansible-role-linux-base
   version: master
 
-- name: ansible-role-docker-ce
+- name: ansible-role-docker
   scm: git
-  src: https://github.com/h4rdL1nk/ansible-role-docker-ce
-  version: master
+  src: https://github.com/h4rdL1nk/ansible-role-docker
+  version: community-edition

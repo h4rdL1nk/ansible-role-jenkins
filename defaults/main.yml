@@ -32,7 +32,7 @@ jenkins:
     root: /data/dockershared/anchore
     config:
       engine:
-        image: "anchore/anchore-engine:v0.2.4"
+        image: "anchore/anchore-engine:v0.6.0"
         dir: config
       db:
         image: "postgres:9"

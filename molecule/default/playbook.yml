@@ -3,5 +3,5 @@
   hosts: all
   roles:
     - role: ansible-role-linux-base
-    - role: ansible-role-docker-ce
+    - role: ansible-role-docker
     - role: ansible-role-jenkins
